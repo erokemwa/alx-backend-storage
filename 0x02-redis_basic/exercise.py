@@ -8,9 +8,7 @@ from functools import wraps
 
 
 def count_calls(method: Callable) -> Callable:
-    """ Decortator for counting how many times a function
-    has been called """
-
+    """returns a Callable"""
     key = method.__qualname__
 
     @wraps(method)
@@ -70,7 +68,7 @@ def replay(fn: Callable):
 
 
 class Cache:
-     """ Class for implementing a Cache """
+    """Create a Cache class"""
 
     def __init__(self):
         """store an instance of the Redis client"""
@@ -87,19 +85,21 @@ class Cache:
 
     def get(self, key: str,
             fn: Optional[callable] = None) -> Union[str, bytes, int, float]:
-        """ Reading from Redis and recovering original type """
+        """convert the data back to the desired format"""
         value = self._redis.get(key)
         if fn:
             value = fn(value)
         return value
 
     def get_str(self, key: str) -> str:
-        """ Parameterizes a value from redis to str """
+        """automatically parametrize Cache.get with the correct
+        conversion function"""
         value = self._redis.get(key)
         return value.decode("utf-8")
 
     def get_int(self, key: str) -> int:
-        """ Parameterizes a value from redis to int """
+        """automatically parametrize Cache.get with the correct
+        conversion function"""
         value = self._redis.get(key)
         try:
             value = int(value.decode("utf-8"))
